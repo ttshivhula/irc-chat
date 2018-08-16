@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/16 11:12:34 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/16 14:11:10 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/16 15:30:46 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,44 +36,63 @@ void	client_data(int listening, int client_fd, int max_fd)
 
 int		init_server(int port)
 {
-}
-
-int main(int argc, char const *argv[])
-{
 	int					listening;
 	struct sockaddr_in	address;
 	int					opt;
-	int					addrlen = sizeof(address);
+	int					error;
 
+	error = 0;
 	opt = 1;
-	listening = socket(AF_INET, SOCK_STREAM, 0);
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	address.sin_port = htons(atoi(argv[1]));
-	bind(listening, (struct sockaddr *)&address, sizeof(address));
-	listen(listening, 10000);
-	
-	fd_set	copy;
-	fd_set	master;
+	address.sin_port = htons(port);
+	if ((listening = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+		error++;
+	if ((bind(listening, (struct sockaddr *)&address, sizeof(address)) == -1))
+		error++;
+	if (listen(listening, 10000) == -1)
+		error++;
+	return (error ? 0 : listening);
+}
+
+int main(int c, char const **v)
+{
+	int					listening;
+	struct sockaddr_in	address;
+	int					addrlen = sizeof(address);
+	fd_set				copy;
+	fd_set				master;
+	fd_set				copyr;
+	fd_set				masterr;
+	int					max;
+	int					new_sock;
+
+	if (c == 2)
+	{
+		if (!(listening = init_server(atoi(v[1]))))
+			printf("Failed to start server\n");
+	}
+	else
+		exit(1);
 	FD_ZERO(&master);
 	FD_SET(listening, &master);
-	int max;
-	int new_sock;
-
+	FD_ZERO(&masterr);
+	FD_SET(listening, &masterr);
 	max = listening;
 	while (42)
 	{
 		copy = master;
-		select(max + 1, &copy, NULL, NULL, NULL);
+		copyr = masterr;
+		select(max + 1, &copy, &copyr, NULL, NULL);
 		for (int i = 0; i <= max; i++)
 		{
-			if (FD_ISSET(i, &copy))
+			if (FD_ISSET(i, &copy) || FD_ISSET(i, &copyr))
 			{
 				if (i == listening)
 				{
 					new_sock = accept(listening, (struct sockaddr *)&address,
 							(socklen_t*)&addrlen);
-					printf("ready to acept: %d\n", new_sock);
+					printf("new client connected: %d\n", new_sock);
 					FD_SET(new_sock, &master);
 					max = (new_sock > max) ? new_sock : max;
 				}
