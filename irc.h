@@ -27,33 +27,30 @@
 
 typedef	struct			s_clients
 {
-	char			username[NAME_SIZE];
-	int			client_fd;
-	char			channel[NAME_SIZE];
+	char				username[NAME_SIZE];
+	char				buff[BUFF_SIZE];
+	int					offset;
+	int					client_fd;
+	char				channel[NAME_SIZE];
 	struct s_clients	*next;
-}				t_clients;
+}						t_clients;
 
 typedef struct			s_channels
 {
-	char			name[NAME_SIZE];
-	struct	s_channels	*next;
-}				t_channels;
-
-typedef struct			s_message
-{
-	char			msg[BUFF_SIZE];
-	char			from[NAME_SIZE];
-	char			to[NAME_SIZE];
-	int			type; // 0 - normal, 1 - join, 2 - private
-}				t_message;
+	char				name[NAME_SIZE];
+	struct s_channels	*next;
+}						t_channels;
 
 typedef struct			s_server
 {
-	t_channels		*channels;
-	t_clients		*clients;
-	int			server_fd;
-}				t_server;
+	t_channels			*channels;
+	t_clients			*clients;
+	int					fd;
+	int					max_fd;
+	fd_set				reads;
+	fd_set				writes;
+}						t_server;
 
-void	ft_die(char *str, int exit_code);
+void					ft_die(char *str, int exit_code);
 
 # endif

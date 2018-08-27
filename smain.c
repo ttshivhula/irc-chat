@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:40:49 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/15 10:48:05 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/27 15:42:33 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 		ft_strcpy((*clients)->username, name);
 		ft_strcpy((*clients)->channel, "general");
 		(*clients)->client_fd = client_fd;
+		(*clients)->offset = 0;
 		(*clients)->next = NULL;
 		return ;
 	}
@@ -30,6 +31,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	ft_strcpy(tmp->username, name);
 	ft_strcpy(tmp->channel, "general");
 	tmp->client_fd = client_fd;
+	tmp->offset = 0;
 	tmp->next = *clients;
 	*clients = tmp;
 }
@@ -51,7 +53,7 @@ void	add_channels(t_channels **channels, char *name)
 	*channels = tmp;
 }
 
-static void accept_client(int server_fd, fd_set *master, int *fd_max)
+static void accept_client(t_server *server)
 {
 	int 					connfd;
 	struct sockaddr_in		temp;
@@ -59,23 +61,28 @@ static void accept_client(int server_fd, fd_set *master, int *fd_max)
 
 	socklen = sizeof(struct sockaddr_in);
 	ft_bzero(&temp, sizeof(struct sockaddr_in));
-	if ((connfd = accept(server_fd, (struct sockaddr *)&temp, &socklen)) == -1)
+	if ((connfd = accept((*server).fd, (struct sockaddr *)&temp, &socklen)) == -1)
 		ft_putendl("Failed to accept client");
 	else
 	{
-		if (connfd > *fd_max)
-			*fd_max = connfd;
-		//printf("New client [%d] joined.\n", connfd);
-		FD_SET(connfd, master);
+		add_clients(&(*server).clients, ft_strjoin("client", ft_itoa(connfd)), connfd);
+		if (connfd > (*server).max_fd)
+			(*server).max_fd = connfd;
+		FD_SET(connfd, &((*server).reads));
 	}
 }
 
-int	get_client_fd(t_clients *clients, char *name)
+int	get_client_fd(t_clients *clients, char *name, int fd)
 {
 	while (clients)
 	{
 		if (!ft_strcmp(clients->username, name))
-			return (clients->client_fd);
+		{
+			if (clients->client_fd == fd)
+				return (-1);
+			else
+				return (clients->client_fd);
+		}
 		clients = clients->next;
 	}
 	return (-1);
@@ -106,81 +113,76 @@ int	same_channel(t_clients *clients, int client_one, int client_two)
 	return (0);
 }
 
-void	client_data(int clientfd, fd_set *master, int max_fd, t_server *server)
+void	client_data(int clientfd, t_server *server)
 {
 	int		ret;
 	int	i = 0;
-	t_message	buff;
+	char	msg[BUFF_SIZE];
 
-	ft_bzero(&buff, sizeof(t_message));
-	if ((ret = recv(clientfd, &buff, sizeof(t_message), 0)) > 0)
+	ft_bzero(msg, sizeof(msg));
+	if ((ret = recv(clientfd, msg, sizeof(msg), 0)) > 0)
 	{
-		//printf("type: %d to: %s from: %s mesg: %s\n", buff.type, buff.to, buff.from, buff.msg);
-		(buff.type == 1) ? add_clients(&((*server).clients), buff.from, clientfd) : 0;
-		(buff.type == 2) ? send(get_client_fd((*server).clients, buff.to), &buff,
-		sizeof(buff), 0) : 0;
-		while (++i <= max_fd && !buff.type)
+		printf("%s", msg);
+		/*while (++i <= (*server).max_fd && !buff.type)
 		{
 			if ((i != (*server).server_fd) && same_channel((*server).clients, i, clientfd))
 				(i != clientfd) ? send(i, &buff, sizeof(t_message), 0) : 0;
-		}
+		}*/
 	}
 	else
 	{
 		if (ret < 0)
 			ft_die("recv failed\n", 1);
 		printf("Client [%d] left server.\n", clientfd);
-		FD_CLR(clientfd, master);
+		FD_CLR(clientfd, &((*server).reads));
 	}
 }
 
-static void	server_loop(fd_set master, int max_fd, int server_fd)
+static void	server_loop(t_server server)
 {
-	int		i;
-	fd_set	select_fds;
-	t_server	server;
+	int			i;
+	fd_set		read_fds;
 
 	server.clients  = NULL;
 	server.channels = NULL;
 	add_channels(&server.channels, "general");
-	select_fds = master;
-	server.server_fd = server_fd;
-	while (select(max_fd + 1, &select_fds, NULL, NULL, NULL) > -1)
+	read_fds = server.reads;
+	while (select(server.max_fd + 1, &read_fds, NULL, NULL, NULL) > -1)
 	{
+		printf("max_fd: %d\n", server.max_fd);
 		i = 0;
-		while (i < max_fd + 1)
+		while (i < server.max_fd + 1)
 		{
-			if (FD_ISSET(i, &select_fds))
-				i == server_fd ? accept_client(server_fd, &master, &max_fd) :
-					client_data(i, &master, max_fd, &server);
+			if (FD_ISSET(i, &read_fds))
+				i == server.fd ? accept_client(&server) :
+					client_data(i, &server);
 			i++;
 		}
-		select_fds = master;
+		read_fds = server.reads;
 	}
 }
 
 int			main(int c, char **v)
 {
 	struct sockaddr_in	addr;
-	int					server_fd;
-	fd_set		master;
-	int		fd_max;
+	t_server			server;
 
 	if (c != 2)
 		ft_die("Usage: ./server port\n", 1);
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	if ((server.fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		ft_die(ERROR" server socket creation failed\n", 1);
 	addr.sin_port = htons(ft_atoi(v[1]));
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
-	if (bind(server_fd, (void*)&(addr), sizeof(addr)) < 0)
+	if (bind(server.fd, (void*)&(addr), sizeof(addr)) < 0)
 		ft_die(ERROR" server port bind failed\n", 1);
-	if (listen(server_fd, 1000) == -1)
+	if (listen(server.fd, 1000) == -1)
 		ft_die("server failed to listen\n", 1);
-	FD_ZERO(&master);
-	FD_SET(server_fd, &master);
-	fd_max = server_fd;
+	FD_ZERO(&server.reads);
+	FD_ZERO(&server.writes);
+	FD_SET(server.fd, &(server.reads));
+	server.max_fd = server.fd;
 	while (42)
-		server_loop(master, fd_max, server_fd);
+		server_loop(server);
 	return (0);
 }
