@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:40:49 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 16:20:19 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/27 16:43:07 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,8 @@ void	client_data(int clientfd, t_server *server)
 	ft_bzero(msg, sizeof(msg));
 	if ((ret = recv(clientfd, msg, sizeof(msg), 0)) > 0)
 	{
-		printf("%s", msg);
+		//printf("debug: %s", msg);
+		read_to_user(server, clientfd, msg);	
 		/*while (++i <= (*server).max_fd && !buff.type)
 		{
 			if ((i != (*server).server_fd) && same_channel((*server).clients, i, clientfd))
@@ -141,14 +142,15 @@ static void	server_loop(t_server server)
 {
 	int			i;
 	fd_set		read_fds;
+	fd_set		write_fds;
 
 	server.clients  = NULL;
 	server.channels = NULL;
 	add_channels(&server.channels, "general");
 	read_fds = server.reads;
-	while (select(server.max_fd + 1, &read_fds, NULL, NULL, NULL) > -1)
+	write_fds = server.writes;
+	while (select(server.max_fd + 1, &read_fds, &write_fds, NULL, NULL) > -1)
 	{
-		printf("max_fd: %d\n", server.max_fd);
 		i = 0;
 		while (i < server.max_fd + 1)
 		{
@@ -158,6 +160,7 @@ static void	server_loop(t_server server)
 			i++;
 		}
 		read_fds = server.reads;
+		write_fds = server.writes;
 	}
 }
 

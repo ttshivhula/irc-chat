@@ -52,5 +52,6 @@ typedef struct			s_server
 }						t_server;
 
 void					ft_die(char *str, int exit_code);
+void		read_to_user(t_server *server, int clientfd, char *buff);
 
 # endif

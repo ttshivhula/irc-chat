@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 16:22:56 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/27 17:26:19 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int		recv_message_from_server(int sockfd)
 	char			msg[BUFF_SIZE];
 
 	ft_bzero(msg, sizeof(msg));
-	if ((ret = recv(sockfd, &msg, sizeof(msg), 0)) < 1)
+	if ((ret = recv(sockfd, msg, sizeof(msg), 0)) < 1)
 	{
 		printf("Server quit, try again later!\n");
 		return (EXIT_FAILURE);
