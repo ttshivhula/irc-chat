@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:40:49 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 15:42:33 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/27 16:20:19 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 {
 	t_clients *tmp;
 
-	printf("Adding client [%d] -- [%s] to chat\n", client_fd, name);	
 	if (*clients == NULL)
 	{
 		*clients = (t_clients *)malloc(sizeof(t_clients));
