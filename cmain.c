@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 17:26:19 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/28 12:43:10 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int		send_message_to_server(int sockfd)
 	char			msg[BUFF_SIZE];
 	
 	ft_bzero(msg, sizeof(msg));
-	read(1, msg, 4096);
+	read(0, msg, 4096);
 	if (!ft_strcmp(msg, "/exit\n"))
 		exit(0);
 	if (send(sockfd, msg, sizeof(msg), 0) == -1)
@@ -80,7 +80,7 @@ static int 	client_loop(int sockfd, int max_fd, fd_set master)
 		{
 			if (FD_ISSET(i, &select_fds))
 			{
-				if (i == 1)
+				if (i == 0)
 					send_message_to_server(sockfd);
 				else if (recv_message_from_server(sockfd) == EXIT_FAILURE)
 					return (EXIT_FAILURE);

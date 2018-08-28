@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 16:25:50 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 17:26:20 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/28 12:43:11 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,23 @@ t_clients	*get_client(t_clients *clients, int fd)
 	return (NULL);
 }
 
+void		send_command(char *msg, int fd)
+{
+	char	buff[BUFF_SIZE];
+
+	ft_bzero(buff, sizeof(buff));
+	ft_strcpy(buff + ft_strlen(buff), ITALIC);
+	ft_strcpy(buff + ft_strlen(buff), GREY);
+	ft_strcpy(buff + ft_strlen(buff), msg);
+	ft_strcpy(buff + ft_strlen(buff), NORMAL);
+	ft_strcpy(buff + ft_strlen(buff), NO_ITALIC);
+	send(fd, buff, sizeof(buff), 0); 
+}
+
 void		run_who(t_server *server, char *channel, int fd)
 {
 	t_clients *tmp;
 	char		*buff;
-	char		msg[BUFF_SIZE];
 
 	buff = ft_strdup("Users in this channel\n");
 	tmp = (*server).clients;
@@ -40,10 +52,7 @@ void		run_who(t_server *server, char *channel, int fd)
 		}
 		tmp = tmp->next;
 	}
-	buff = ft_strjoin(buff, "\n");
-	ft_bzero(msg, sizeof(msg));
-	ft_strcpy(msg, buff);
-	send(fd, msg, sizeof(msg), 0); 
+	send_command(buff, fd);
 }
 
 /*
@@ -56,8 +65,6 @@ void		process_msg(t_server *server, t_clients *client, char *msg)
 {
 	if (!ft_strncmp(msg, "/who\n", 5))
 		run_who(server, client->channel, client->client_fd);
-	/*else if (!ft_strncmp(msg, "/leave\n", 7) || !ft_strncmp("/join\n", 6))
-		channels(server, client->client_fd);*/
 }
 
 void		read_to_user(t_server *server, int clientfd, char *buff)
