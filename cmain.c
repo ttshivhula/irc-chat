@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/28 12:43:10 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 15:32:06 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,15 @@ int		recv_message_from_server(int sockfd)
 	ft_bzero(msg, sizeof(msg));
 	if ((ret = recv(sockfd, msg, sizeof(msg), 0)) < 1)
 	{
-		printf("Server quit, try again later!\n");
+		ft_putstr("lost server connection.\n");
 		return (EXIT_FAILURE);
 	}
-	printf("%s%s%s", msg, NORMAL, NO_ITALIC);
+	ft_putstr(msg);
 	return (EXIT_SUCCESS);
 }
 
 
-static int 	client_loop(int sockfd, int max_fd, fd_set master)
+static int 	client_loop(int sockfd, fd_set master)
 {
 	fd_set		select_fds;
 	int			i;
@@ -96,7 +96,6 @@ static int 	client_loop(int sockfd, int max_fd, fd_set master)
 void	connect_cmd(struct sockaddr_in addr, struct hostent	*host, int fd)
 {
 	char				msg[BUFF_SIZE];
-	fd_set				master;
 	int					ret;
 	char				**parts;
 
@@ -127,6 +126,7 @@ int			main(int c, char **v)
 	fd_set master;
 
 	addr.sin_family = AF_INET;
+	host = NULL;
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (c != 3)
 		connect_cmd(addr, host, fd);
@@ -142,6 +142,6 @@ int			main(int c, char **v)
 	FD_ZERO(&master);
 	FD_SET(fd, &master);
 	FD_SET(1, &master);
-	client_loop(fd, fd, master);
+	client_loop(fd, master);
 	return (0);
 }

@@ -6,45 +6,23 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 16:25:50 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/28 12:43:11 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 15:30:24 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
-
-t_clients	*get_client(t_clients *clients, int fd)
-{
-	while (clients)
-	{
-		if (clients->client_fd == fd)
-			return (clients);
-		clients = clients->next;
-	}
-	return (NULL);
-}
-
-t_clients	*get_client_nick(t_clients *clients, char *nick)
-{
-	while (clients)
-	{
-		if (!ft_strcmp(clients->nick, nick))
-			return (clients);
-		clients = clients->next;
-	}
-	return (NULL);
-}
 
 int		send_command(char *msg, int fd)
 {
 	char	buff[BUFF_SIZE];
 
 	ft_bzero(buff, sizeof(buff));
-	//ft_strcpy(buff + ft_strlen(buff), ITALIC);
-	//ft_strcpy(buff + ft_strlen(buff), GREY);
-	ft_strcpy(buff + ft_strlen(buff), msg);
-	//ft_strcpy(buff + ft_strlen(buff), NORMAL);
-	//ft_strcpy(buff + ft_strlen(buff), NO_ITALIC);
-	send(fd, buff, sizeof(buff), 0);
+	ft_strcpy(buff, ITALIC);
+	ft_strcat(buff, GREY);
+	ft_strcat(buff, msg);
+	ft_strcat(buff, NORMAL);
+	ft_strcat(buff, NO_ITALIC);
+	send(fd, buff, ft_strlen(buff), 0);
 	return (1);
 }
 
@@ -87,6 +65,7 @@ int		run_nick(t_server *server, t_clients *client)
 			return send_command("nick already in use.\n", client->client_fd);
 		tmp = tmp->next;
 	}
+	broadcast_action(server, client, 0, nick);
 	ft_strcpy(client->nick, nick);
 	return send_command("nick changed.\n", client->client_fd);
 }
@@ -102,11 +81,13 @@ int		run_join(t_server *server, t_clients *client)
 	if (ft_strlen(channel) < 3 || ft_strlen(channel) > 18)
 		return send_command("bad channel.\n", client->client_fd);
 	ft_strcpy(client->channel, channel);
+	broadcast_action(server, client, 1, NULL);
 	return send_command("you joined channel.\n", client->client_fd);
 }
 
 int		run_leave(t_server *server, t_clients *client)
 {
+	broadcast_action(server, client, 2, NULL);
 	ft_bzero(client->channel, sizeof(client->channel));
 	return send_command("you left channel.\n", client->client_fd);
 }
@@ -117,9 +98,10 @@ int		group_all_private(t_server *server, t_clients *client, int private, int to_
 
 	i = -1;
 	ft_bzero(server->buff, sizeof(server->buff));
+	ft_strcpy(server->buff, BLUE);
 	ft_strcat(server->buff, client->nick);
-	private ? ft_strcat(server->buff, " [private] ") : 0;
-	ft_strcat(server->buff, ": ");
+	private ? ft_strcat(server->buff, RED" [private]") : 0;
+	ft_strcat(server->buff, NORMAL" : ");
 	ft_strcat(server->buff, client->buff);
 	while (++i < server->max_fd + 1 && !private)
 	{
@@ -166,6 +148,7 @@ int		run_msg(t_server *server, t_clients *client)
 	else
 		group_all_private(server, client, 1, user->client_fd);
 	nick ? free(nick) : 0;
+	return (0);
 }
 
 t_options	g_options[] = 

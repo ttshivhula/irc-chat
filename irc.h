@@ -78,5 +78,8 @@ typedef struct	s_options
 void					ft_die(char *str, int exit_code);
 void		read_to_user(t_server *server, int clientfd, char *buff);
 int	same_channel(t_clients *clients, int client_one, int client_two);
+int		broadcast_action(t_server *server, t_clients *client, int action, char *nick);
+t_clients	*get_client(t_clients *clients, int fd);
+t_clients	*get_client_nick(t_clients *clients, char *nick);
 
 # endif

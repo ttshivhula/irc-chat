@@ -85,6 +85,7 @@ static void accept_client(t_server *server)
 	else
 	{
 		add_clients(&(*server).clients, ft_strjoin("client", ft_itoa(connfd)), connfd);
+		broadcast_action(server, server->clients, 1, NULL);
 		if (connfd > (*server).max_fd)
 			(*server).max_fd = connfd;
 		FD_SET(connfd, &((*server).reads));
@@ -107,36 +108,11 @@ int	get_client_fd(t_clients *clients, char *name, int fd)
 	return (-1);
 }
 
-char	*get_client_channel(t_clients *clients, int fd)
-{
-	while (clients)
-	{
-		if (clients->client_fd == fd)
-			return (clients->channel);
-		clients = clients->next;
-	}
-	return (NULL);
-}
-
-int	same_channel(t_clients *clients, int client_one, int client_two)
-{
-	char	*s1;
-	char	*s2;
-
-	s1 = get_client_channel(clients, client_one);
-	s2 = get_client_channel(clients, client_two);
-	if (!s1 || !s2)
-		return (0);
-	if (!ft_strcmp(s1, s2) && (client_one != client_two))
-		return (1);
-	return (0);
-}
-
 void	client_data(int clientfd, t_server *server)
 {
 	int		ret;
-	int	i = 0;
 	char	msg[BUFF_SIZE];
+	t_clients *client;
 
 	ft_bzero(msg, sizeof(msg));
 	if ((ret = recv(clientfd, msg, sizeof(msg), 0)) > 0)
@@ -145,7 +121,8 @@ void	client_data(int clientfd, t_server *server)
 	{
 		if (ret < 0)
 			ft_die("recv failed\n", 1);
-		printf("Client [%d] left server.\n", clientfd);
+		client = get_client(server->clients, clientfd);
+		broadcast_action(server, client, 0, NULL);
 		remove_client(&(server->clients), clientfd);
 		FD_CLR(clientfd, &((*server).reads));
 	}
