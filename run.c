@@ -42,7 +42,7 @@ int		run_nick(t_server *server, t_clients *client)
 	ft_bzero(buff, sizeof(buff));
 	nick = ft_strchr(client->buff, ' ') + 1;
 	nick[ft_strlen(nick) - 1] = '\0';
-	if (ft_strlen(nick) < 3 || ft_strlen(nick) > 18)
+	if (ft_strlen(nick) < 3 || ft_strlen(nick) > 9)
 		return send_command("bad nick\n", client->client_fd);
 	tmp = (*server).clients;
 	while (tmp)
@@ -64,7 +64,7 @@ int		run_join(t_server *server, t_clients *client)
 	ft_bzero(buff, sizeof(buff));
 	channel = ft_strchr(client->buff, ' ') + 1;
 	channel[ft_strlen(channel) - 1] = '\0';
-	if (ft_strlen(channel) < 3 || ft_strlen(channel) > 18)
+	if (ft_strlen(channel) < 3 || ft_strlen(channel) > 9)
 		return send_command("bad channel.\n", client->client_fd);
 	ft_strcpy(client->channel, channel);
 	broadcast_action(server, client, 1, NULL);
