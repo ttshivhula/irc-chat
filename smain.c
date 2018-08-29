@@ -6,91 +6,11 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:40:49 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/27 16:43:07 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 16:03:30 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
-
-void	add_clients(t_clients **clients, char *name, int client_fd)
-{
-	t_clients *tmp;
-
-	if (*clients == NULL)
-	{
-		*clients = (t_clients *)malloc(sizeof(t_clients));
-		ft_strcpy((*clients)->nick, name);
-		ft_strcpy((*clients)->channel, "general");
-		(*clients)->client_fd = client_fd;
-		(*clients)->offset = 0;
-		(*clients)->next = NULL;
-		return ;
-	}
-	tmp = (t_clients *)malloc(sizeof(t_clients));	
-	ft_strcpy(tmp->nick, name);
-	ft_strcpy(tmp->channel, "general");
-	tmp->client_fd = client_fd;
-	tmp->offset = 0;
-	tmp->next = *clients;
-	*clients = tmp;
-}
-
-void remove_client(t_clients **head, int fd)
-{
-  t_clients *curr, *prev;
-
-  /* For 1st node, indicate there is no previous. */
-  prev = NULL;
-
-  /*
-   * Visit each node, maintaining a pointer to
-   * the previous node we just visited.
-   */
-  for (curr = *head;
-	curr != NULL;
-	prev = curr, curr = curr->next) {
-
-    if (curr->client_fd == fd) {  /* Found it. */
-      if (prev == NULL) {
-        /* Fix beginning pointer. */
-        *head = curr->next;
-      } else {
-        /*
-         * Fix previous node's next to
-         * skip over the removed node.
-         */
-        prev->next = curr->next;
-      }
-
-      /* Deallocate the node. */
-      free(curr);
-
-      /* Done searching. */
-      return;
-    }
-  }
-}
-
-
-static void accept_client(t_server *server)
-{
-	int 					connfd;
-	struct sockaddr_in		temp;
-	socklen_t				socklen;
-
-	socklen = sizeof(struct sockaddr_in);
-	ft_bzero(&temp, sizeof(struct sockaddr_in));
-	if ((connfd = accept((*server).fd, (struct sockaddr *)&temp, &socklen)) == -1)
-		ft_putendl("Failed to accept client");
-	else
-	{
-		add_clients(&(*server).clients, ft_strjoin("client", ft_itoa(connfd)), connfd);
-		broadcast_action(server, server->clients, 1, NULL);
-		if (connfd > (*server).max_fd)
-			(*server).max_fd = connfd;
-		FD_SET(connfd, &((*server).reads));
-	}
-}
 
 int	get_client_fd(t_clients *clients, char *name, int fd)
 {

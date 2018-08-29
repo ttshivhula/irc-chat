@@ -81,5 +81,17 @@ int	same_channel(t_clients *clients, int client_one, int client_two);
 int		broadcast_action(t_server *server, t_clients *client, int action, char *nick);
 t_clients	*get_client(t_clients *clients, int fd);
 t_clients	*get_client_nick(t_clients *clients, char *nick);
+int			run_who(t_server *server, t_clients *client);
+int		run_nick(t_server *server, t_clients *client);
+int		run_join(t_server *server, t_clients *client);
+int		run_leave(t_server *server, t_clients *client);
+int		run_msg(t_server *server, t_clients *client);
+int		send_command(char *msg, int fd);
+int		group_all_private(t_server *server, t_clients *client, int
+				  private, int to_fd);
+char		*get_nick(char *s);
+void	add_clients(t_clients **clients, char *name, int client_fd);
+void	remove_client(t_clients **head, int fd);
+void	accept_client(t_server *server);
 
 # endif
