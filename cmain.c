@@ -6,75 +6,11 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 18:19:23 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 18:23:16 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
-
-/* graphics
-void drawGrid() {
-	while (x < 100) {
-		y=0;
-		while (y < 100) {
-			if (x % 20 == 0)
-				mlx_putpixel(x, y);
-			if (y % 20 == 0)
-				mlx_putpixel(x, y);
-			y++;
-		}
-		x++;
-	}
-}
-
-
-void drawRect(int x1, int y1, int x2, int y2) {
-	for (int x = x1; x < x2; x++) {
-		for (int y = y1; y < y2; y++) {
-			mlx_putpixel(x, y, colour);
-		}
-	}
-
-
-}*/
-
-void		in_server_connection(struct sockaddr_in addr, struct hostent
-				     *host, char *buff, int *sockfd)
-{
-	char			msg[BUFF_SIZE];
-	char			**parts;
-	int			ret;
-	
-	ft_strcpy(msg, buff);
-	ret = -1;
-	while (ret == -1)
-	{
-		if (!ft_strlen(buff))
-		{
-			ft_bzero(msg, sizeof(msg));
-			read(0, msg, sizeof(msg));
-		}
-		else
-			ft_bzero(buff, 10);
-		parts = ft_strsplit(msg, ' ');
-		if (!ft_strncmp(msg, "/connect", 8) && parts[2])
-		{
-			addr.sin_port = htons(ft_atoi(parts[2]));
-			host = gethostbyname(parts[1]);
-			ft_memcpy(&addr.sin_addr.s_addr, host->h_addr, host->h_length);
-			ret = connect(*sockfd, (void*)&(addr), sizeof(addr));
-		}
-		(ret == -1) ? ft_putendl("Unable to connect") :
-			ft_putendl("Connected");
-	}
-}
-
-void		set_fds_conn(fd_set *master, int fd)
-{
-	FD_ZERO(master);
-	FD_SET(fd, master);
-	FD_SET(1, master);
-}
 
 int		send_message_to_server(int *sockfd, fd_set *master)
 {

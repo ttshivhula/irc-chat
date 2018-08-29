@@ -6,7 +6,7 @@
 #    By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/08/25 11:29:48 by ttshivhu          #+#    #+#              #
-#*   Updated: 2018/08/29 16:09:48 by ttshivhu         ###   ########.fr       *#
+#*   Updated: 2018/08/29 18:24:48 by ttshivhu         ###   ########.fr       *#
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ SERVER = server
 CLIENT = client
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -I. -Ilibft
-SRC = sclient_utils.c broadcast.c generic.c server_buffer.c  run.c \
+SRC = client_utils.c sclient_utils.c broadcast.c generic.c server_buffer.c  run.c \
 
 OBJ = $(SRC:.c=.o)
 all: $(SERVER)

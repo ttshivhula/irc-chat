@@ -86,5 +86,7 @@ char		*get_nick(char *s);
 void	add_clients(t_clients **clients, char *name, int client_fd);
 void	remove_client(t_clients **head, int fd);
 void	accept_client(t_server *server);
-
+void		in_server_connection(struct sockaddr_in addr, struct hostent
+				     *host, char *buff, int *sockfd);
+void		set_fds_conn(fd_set *master, int fd);
 # endif
