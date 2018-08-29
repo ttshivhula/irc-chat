@@ -19,7 +19,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	if (*clients == NULL)
 	{
 		*clients = (t_clients *)malloc(sizeof(t_clients));
-		ft_strcpy((*clients)->username, name);
+		ft_strcpy((*clients)->nick, name);
 		ft_strcpy((*clients)->channel, "general");
 		(*clients)->client_fd = client_fd;
 		(*clients)->offset = 0;
@@ -27,7 +27,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 		return ;
 	}
 	tmp = (t_clients *)malloc(sizeof(t_clients));	
-	ft_strcpy(tmp->username, name);
+	ft_strcpy(tmp->nick, name);
 	ft_strcpy(tmp->channel, "general");
 	tmp->client_fd = client_fd;
 	tmp->offset = 0;
@@ -35,22 +35,42 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	*clients = tmp;
 }
 
-void	add_channels(t_channels **channels, char *name)
+void remove_client(t_clients **head, int fd)
 {
-	t_channels *tmp;
-	
-	if (*channels == NULL)
-	{
-		*channels = (t_channels *)malloc(sizeof(t_channels));
-		ft_strcpy((*channels)->name, name);
-		(*channels)->next = NULL;
-		return ;
-	}
-	tmp = (t_channels *)malloc(sizeof(t_channels));	
-	ft_strcpy(tmp->name, name);
-	tmp->next = *channels;
-	*channels = tmp;
+  t_clients *curr, *prev;
+
+  /* For 1st node, indicate there is no previous. */
+  prev = NULL;
+
+  /*
+   * Visit each node, maintaining a pointer to
+   * the previous node we just visited.
+   */
+  for (curr = *head;
+	curr != NULL;
+	prev = curr, curr = curr->next) {
+
+    if (curr->client_fd == fd) {  /* Found it. */
+      if (prev == NULL) {
+        /* Fix beginning pointer. */
+        *head = curr->next;
+      } else {
+        /*
+         * Fix previous node's next to
+         * skip over the removed node.
+         */
+        prev->next = curr->next;
+      }
+
+      /* Deallocate the node. */
+      free(curr);
+
+      /* Done searching. */
+      return;
+    }
+  }
 }
+
 
 static void accept_client(t_server *server)
 {
@@ -75,7 +95,7 @@ int	get_client_fd(t_clients *clients, char *name, int fd)
 {
 	while (clients)
 	{
-		if (!ft_strcmp(clients->username, name))
+		if (!ft_strcmp(clients->nick, name))
 		{
 			if (clients->client_fd == fd)
 				return (-1);
@@ -107,7 +127,7 @@ int	same_channel(t_clients *clients, int client_one, int client_two)
 	s2 = get_client_channel(clients, client_two);
 	if (!s1 || !s2)
 		return (0);
-	if (!ft_strcmp(s1, s2))
+	if (!ft_strcmp(s1, s2) && (client_one != client_two))
 		return (1);
 	return (0);
 }
@@ -120,20 +140,13 @@ void	client_data(int clientfd, t_server *server)
 
 	ft_bzero(msg, sizeof(msg));
 	if ((ret = recv(clientfd, msg, sizeof(msg), 0)) > 0)
-	{
-		//printf("debug: %s", msg);
 		read_to_user(server, clientfd, msg);	
-		/*while (++i <= (*server).max_fd && !buff.type)
-		{
-			if ((i != (*server).server_fd) && same_channel((*server).clients, i, clientfd))
-				(i != clientfd) ? send(i, &buff, sizeof(t_message), 0) : 0;
-		}*/
-	}
 	else
 	{
 		if (ret < 0)
 			ft_die("recv failed\n", 1);
 		printf("Client [%d] left server.\n", clientfd);
+		remove_client(&(server->clients), clientfd);
 		FD_CLR(clientfd, &((*server).reads));
 	}
 }
@@ -141,26 +154,30 @@ void	client_data(int clientfd, t_server *server)
 static void	server_loop(t_server server)
 {
 	int			i;
+	int			j;
 	fd_set		read_fds;
-	fd_set		write_fds;
 
 	server.clients  = NULL;
-	server.channels = NULL;
-	add_channels(&server.channels, "general");
 	read_fds = server.reads;
-	write_fds = server.writes;
-	while (select(server.max_fd + 1, &read_fds, &write_fds, NULL, NULL) > -1)
+	while (select(server.max_fd + 1, &read_fds, &(server.writes), NULL, NULL) > -1)
 	{
-		i = 0;
-		while (i < server.max_fd + 1)
+		i = -1;
+		while (++i < server.max_fd + 1)
 		{
 			if (FD_ISSET(i, &read_fds))
+			{
 				i == server.fd ? accept_client(&server) :
 					client_data(i, &server);
-			i++;
+				j = -1;
+				while (++j < server.max_fd + 1)
+				{
+					if (FD_ISSET(j, &(server.writes)))
+						send(j, server.buff, sizeof(server.buff), 0);
+				}
+				FD_ZERO(&server.writes);
+			}
 		}
 		read_fds = server.reads;
-		write_fds = server.writes;
 	}
 }
 

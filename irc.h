@@ -50,7 +50,7 @@
 
 typedef	struct			s_clients
 {
-	char				username[NAME_SIZE];
+	char				nick[NAME_SIZE];
 	char				buff[BUFF_SIZE];
 	int					offset;
 	int					client_fd;
@@ -58,23 +58,25 @@ typedef	struct			s_clients
 	struct s_clients	*next;
 }						t_clients;
 
-typedef struct			s_channels
-{
-	char				name[NAME_SIZE];
-	struct s_channels	*next;
-}						t_channels;
-
 typedef struct			s_server
 {
-	t_channels			*channels;
 	t_clients			*clients;
+	char				buff[BUFF_SIZE];
 	int					fd;
 	int					max_fd;
 	fd_set				reads;
 	fd_set				writes;
 }						t_server;
 
+typedef struct	s_options
+{
+	char	*option;
+	int		len;
+	int		(*run)(t_server *, t_clients *);
+}				t_options;
+
 void					ft_die(char *str, int exit_code);
 void		read_to_user(t_server *server, int clientfd, char *buff);
+int	same_channel(t_clients *clients, int client_one, int client_two);
 
 # endif

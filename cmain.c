@@ -43,7 +43,7 @@ int		send_message_to_server(int sockfd)
 	char			msg[BUFF_SIZE];
 	
 	ft_bzero(msg, sizeof(msg));
-	read(0, msg, 4096);
+	read(1, msg, 4096);
 	if (!ft_strcmp(msg, "/exit\n"))
 		exit(0);
 	if (send(sockfd, msg, sizeof(msg), 0) == -1)
@@ -62,7 +62,7 @@ int		recv_message_from_server(int sockfd)
 		printf("Server quit, try again later!\n");
 		return (EXIT_FAILURE);
 	}
-	printf("%s", msg);
+	printf("%s%s%s", msg, NORMAL, NO_ITALIC);
 	return (EXIT_SUCCESS);
 }
 
@@ -80,7 +80,7 @@ static int 	client_loop(int sockfd, int max_fd, fd_set master)
 		{
 			if (FD_ISSET(i, &select_fds))
 			{
-				if (i == 0)
+				if (i == 1)
 					send_message_to_server(sockfd);
 				else if (recv_message_from_server(sockfd) == EXIT_FAILURE)
 					return (EXIT_FAILURE);
