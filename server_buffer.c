@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 16:25:50 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 15:51:30 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 16:18:50 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,30 +34,18 @@ char	*get_nick(char *s)
 	return (ret);
 }
 
-
-t_options	g_options[] = 
-{
-	{"/join ", 6, run_join},
-	{"/leave", 6, run_leave},
-	{"/who", 4, run_who},
-	{"/nick ", 6, run_nick},
-	{"/msg ", 5, run_msg},
-	{NULL, 0, NULL}
-};
-
 int		process_msg(t_server *server, t_clients *client, char *buff)
 {
-	int i;
-
-	i = 0;
-	while (g_options[i].option)
-	{
-		if (!ft_strncmp(buff, g_options[i].option, g_options[i].len))
-		{
-			return (g_options[i].run(server, client));
-		}
-		i++;
-	}
+	if (!ft_strncmp(buff, "/join ", 6))
+		return run_join(server, client);
+	if (!ft_strncmp(buff, "/leave", 6))
+		return run_leave(server, client);
+	if (!ft_strncmp(buff, "/who", 4))
+		return run_who(server, client);
+	if (!ft_strncmp(buff, "/nick ", 6))
+		return run_join(server, client);
+	if (!ft_strncmp(buff, "/msg ", 5))
+		return run_msg(server, client);
 	return (group_all_private(server, client, 0, 0));
 }
 

@@ -68,13 +68,6 @@ typedef struct			s_server
 	fd_set				writes;
 }						t_server;
 
-typedef struct	s_options
-{
-	char	*option;
-	int		len;
-	int		(*run)(t_server *, t_clients *);
-}				t_options;
-
 void					ft_die(char *str, int exit_code);
 void		read_to_user(t_server *server, int clientfd, char *buff);
 int	same_channel(t_clients *clients, int client_one, int client_two);
