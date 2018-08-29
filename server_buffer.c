@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 16:25:50 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 16:18:50 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 19:09:41 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int		process_msg(t_server *server, t_clients *client, char *buff)
 	if (!ft_strncmp(buff, "/who", 4))
 		return run_who(server, client);
 	if (!ft_strncmp(buff, "/nick ", 6))
-		return run_join(server, client);
+		return run_nick(server, client);
 	if (!ft_strncmp(buff, "/msg ", 5))
 		return run_msg(server, client);
 	return (group_all_private(server, client, 0, 0));
