@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 15:47:56 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 15:49:24 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/29 17:24:17 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,9 +73,21 @@ int		run_join(t_server *server, t_clients *client)
 
 int		run_leave(t_server *server, t_clients *client)
 {
-	broadcast_action(server, client, 2, NULL);
-	ft_bzero(client->channel, sizeof(client->channel));
-	return send_command("you left channel.\n", client->client_fd);
+	char *channel;
+
+	channel = ft_strchr(client->buff, ' ');
+	channel = channel ? channel + 1 : channel;
+	if (channel)
+	{
+		if (!ft_strncmp(channel, client->channel,
+				ft_strlen(client->channel)))
+		{
+			broadcast_action(server, client, 2, NULL);
+			ft_bzero(client->channel, sizeof(client->channel));
+			return send_command("you left channel.\n", client->client_fd);
+		}
+	}
+	return send_command("error channel.\n", client->client_fd);
 }
 
 int		run_msg(t_server *server, t_clients *client)
