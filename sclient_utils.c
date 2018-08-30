@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 16:02:18 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 16:08:41 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 08:55:14 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	{
 		*clients = (t_clients *)malloc(sizeof(t_clients));
 		ft_strcpy((*clients)->nick, name);
-		ft_strcpy((*clients)->channel, "general");
+		ft_strcpy((*clients)->channel, "#general");
 		(*clients)->client_fd = client_fd;
 		(*clients)->offset = 0;
 		(*clients)->next = NULL;
@@ -28,7 +28,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	}
 	tmp = (t_clients *)malloc(sizeof(t_clients));	
 	ft_strcpy(tmp->nick, name);
-	ft_strcpy(tmp->channel, "general");
+	ft_strcpy(tmp->channel, "#general");
 	tmp->client_fd = client_fd;
 	tmp->offset = 0;
 	tmp->next = *clients;

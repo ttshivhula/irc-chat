@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 15:47:56 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 17:24:17 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 09:06:45 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,12 +60,21 @@ int		run_join(t_server *server, t_clients *client)
 {
 	char	*channel;
 	char		buff[BUFF_SIZE];
+	int		i;
 
+	i = 0;
 	ft_bzero(buff, sizeof(buff));
 	channel = ft_strchr(client->buff, ' ') + 1;
 	channel[ft_strlen(channel) - 1] = '\0';
-	if (ft_strlen(channel) < 3 || ft_strlen(channel) > 9)
+	if ((ft_strlen(channel) < 3 || (ft_strlen(channel) > 200)) ||
+			!(channel[0] == '#' || channel[0] == '&'))
 		return send_command("bad channel.\n", client->client_fd);
+	while (channel[++i])
+	{
+		if (!ft_isalnum(channel[i]))
+			return send_command("bad channel.\n", client->client_fd);
+	}
+	broadcast_action(server, client, 2, NULL);
 	ft_strcpy(client->channel, channel);
 	broadcast_action(server, client, 1, NULL);
 	return send_command("you joined channel.\n", client->client_fd);

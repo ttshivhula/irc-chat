@@ -20,7 +20,7 @@
 # include <libft.h>
 
 # define BUFF_SIZE 4096
-# define NAME_SIZE 20
+# define NAME_SIZE 201
 
 # define ERROR "\x1b[31mERROR:\x1b[0m"
 # define SUCCESS "\x1b[32mSUCCESS:\x1b[0m"
