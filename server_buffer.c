@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/27 16:25:50 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 19:28:41 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 10:18:21 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,16 @@ void		read_to_user(t_server *server, int clientfd, char *buff)
 	client = get_client((*server).clients, clientfd);
 	if (ft_strchr(buff, '\n'))
 	{
-		ft_strcpy(client->buff + client->offset, buff);
-		client->offset = 0;
+		//ft_strcpy(client->buff + client->offset, buff);
+		ft_write(&(client->ring), buff);
+		//client->offset = 0;
+		ft_read(&(client->ring), client->buff);
 		process_msg(server, client, client->buff);
 	}
 	else
 	{
-		ft_strcpy(client->buff + client->offset, buff);
-		client->offset = ft_strlen(client->buff);
+		//ft_strcpy(client->buff + client->offset, buff);
+		ft_write(&(client->ring), buff);
+		//client->offset = ft_strlen(client->buff);
 	}
 }

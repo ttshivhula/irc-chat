@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   irc.h                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/08/30 10:06:47 by ttshivhu          #+#    #+#             */
+/*   Updated: 2018/08/30 10:16:39 by ttshivhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef IRC_H
 # define IRC_H
 
@@ -49,13 +61,20 @@
 # define NO_CROSSED "\033[29m"
 # define CLEAR "\e[1;1H\e[2J" 
 
+typedef struct			s_ring
+{
+	char				buff[BUFF_SIZE];
+	int					write_ptr;
+	int					read_ptr;
+}						t_ring;
+
 typedef	struct			s_clients
 {
 	char				nick[NAME_SIZE];
-	char				buff[BUFF_SIZE];
-	int					offset;
 	int					client_fd;
 	char				channel[NAME_SIZE];
+	t_ring				*ring;
+	char				buff[BUFF_SIZE];
 	struct s_clients	*next;
 }						t_clients;
 
@@ -70,24 +89,28 @@ typedef struct			s_server
 }						t_server;
 
 void					ft_die(char *str, int exit_code);
-void		read_to_user(t_server *server, int clientfd, char *buff);
-int	same_channel(t_clients *clients, int client_one, int client_two);
-int		broadcast_action(t_server *server, t_clients *client, int action, char *nick);
-t_clients	*get_client(t_clients *clients, int fd);
-t_clients	*get_client_nick(t_clients *clients, char *nick);
-int			run_who(t_server *server, t_clients *client);
-int		run_nick(t_server *server, t_clients *client);
-int		run_join(t_server *server, t_clients *client);
-int		run_leave(t_server *server, t_clients *client);
-int		run_msg(t_server *server, t_clients *client);
-int		send_command(char *msg, int fd);
-int		group_all_private(t_server *server, t_clients *client, int
-				  private, int to_fd);
-char		*get_nick(char *s);
-void	add_clients(t_clients **clients, char *name, int client_fd);
-void	remove_client(t_clients **head, int fd);
-void	accept_client(t_server *server);
-void		in_server_connection(struct sockaddr_in addr, struct hostent
-				     *host, char *buff, int *sockfd);
-void		set_fds_conn(fd_set *master, int fd);
+void					read_to_user(t_server *server, int clientfd, char *buff);
+int						same_channel(t_clients *clients, int client_one, int client_two);
+int						broadcast_action(t_server *server, t_clients *client, int action, char *nick);
+t_clients				*get_client(t_clients *clients, int fd);
+t_clients				*get_client_nick(t_clients *clients, char *nick);
+int						run_who(t_server *server, t_clients *client);
+int						run_nick(t_server *server, t_clients *client);
+int						run_join(t_server *server, t_clients *client);
+int						run_leave(t_server *server, t_clients *client);
+int						run_msg(t_server *server, t_clients *client);
+int						send_command(char *msg, int fd);
+int						group_all_private(t_server *server, t_clients *client,
+		int private, int to_fd);
+char					*get_nick(char *s);
+void					dd_clients(t_clients **clients, char *name, int client_fd);
+void					remove_client(t_clients **head, int fd);
+void					accept_client(t_server *server);
+void					in_server_connection(struct sockaddr_in addr,
+		struct hostent *host, char *buff, int *sockfd);
+void					set_fds_conn(fd_set *master, int fd);
+t_ring*					ring_init(void);
+void					ft_write(t_ring **ring, char *buff);
+void					ft_read(t_ring **ring, char *str);
+
 # endif

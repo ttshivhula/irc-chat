@@ -14,7 +14,7 @@ SERVER = server
 CLIENT = client
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -I. -Ilibft
-SRC = client_utils.c sclient_utils.c broadcast.c generic.c server_buffer.c  run.c \
+SRC = client_utils.c circular.c sclient_utils.c broadcast.c generic.c server_buffer.c  run.c \
 
 OBJ = $(SRC:.c=.o)
 all: $(SERVER)
