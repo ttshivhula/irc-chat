@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 18:21:16 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 11:16:54 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 11:25:55 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ char		**buffers(char **buff, char **msg)
 	}
 	else
 		ft_bzero(*buff, 10);
-	parts = ft_strsplit(msg, ' ');
+	parts = ft_strsplit(*msg, ' ');
+	return (parts);
 }
 
 void		in_server_connection(struct sockaddr_in addr,
