@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 14:49:27 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 15:51:32 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 08:32:15 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int		group_all_private(t_server *server, t_clients *client, int private, int to_
 	int	i;
 
 	i = -1;
+	(void)to_fd;
 	ft_bzero(server->buff, sizeof(server->buff));
 	ft_strcpy(server->buff, BLUE);
 	ft_strcat(server->buff, client->nick);
@@ -42,7 +43,8 @@ int		group_all_private(t_server *server, t_clients *client, int private, int to_
 		if (same_channel(server->clients, i, client->client_fd))
 			FD_SET(i, &(server->writes));
 	}
-	private ? FD_SET(to_fd, &(server->writes)) : 0;
+	if (private)
+		FD_SET(to_fd, &(server->writes));
 	return (1);
 }
 
