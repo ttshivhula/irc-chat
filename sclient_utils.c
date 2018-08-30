@@ -6,13 +6,13 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 16:02:18 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 10:15:18 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 10:56:19 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
 
-void	add_clients(t_clients **clients, char *name, int client_fd)
+void		add_clients(t_clients **clients, char *name, int client_fd)
 {
 	t_clients *tmp;
 
@@ -26,7 +26,7 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 		(*clients)->next = NULL;
 		return ;
 	}
-	tmp = (t_clients *)malloc(sizeof(t_clients));	
+	tmp = (t_clients *)malloc(sizeof(t_clients));
 	ft_strcpy(tmp->nick, name);
 	ft_strcpy(tmp->channel, "#general");
 	tmp->client_fd = client_fd;
@@ -35,45 +35,46 @@ void	add_clients(t_clients **clients, char *name, int client_fd)
 	*clients = tmp;
 }
 
-void	remove_client(t_clients **head, int fd)
+void		remove_client(t_clients **head, int fd)
 {
-  t_clients	*curr;
-  t_clients	*prev;
+	t_clients	*curr;
+	t_clients	*prev;
 
-  prev = NULL;
-  curr = *head;
-  while (curr != NULL)
-  {
-    if (curr->client_fd == fd)
-    {
-	    if (prev == NULL)
-		    *head = curr->next;
-	    else
-		    prev->next = curr->next;
-	    free(curr);
-	    return;
-    }
-    prev = curr;
-    curr = curr->next;
-  }
+	prev = NULL;
+	curr = *head;
+	while (curr != NULL)
+	{
+		if (curr->client_fd == fd)
+		{
+			if (prev == NULL)
+				*head = curr->next;
+			else
+				prev->next = curr->next;
+			free(curr);
+			return ;
+		}
+		prev = curr;
+		curr = curr->next;
+	}
 }
 
-void accept_client(t_server *server)
+void		accept_client(t_server *server)
 {
-	int 					connfd;
+	int						fd;
 	struct sockaddr_in		temp;
 	socklen_t				socklen;
 
 	socklen = sizeof(struct sockaddr_in);
 	ft_bzero(&temp, sizeof(struct sockaddr_in));
-	if ((connfd = accept((*server).fd, (struct sockaddr *)&temp, &socklen)) == -1)
+	if ((fd = accept((*server).fd, (struct sockaddr *)&temp, &socklen)) == -1)
 		ft_putendl("Failed to accept client");
 	else
 	{
-		add_clients(&(*server).clients, ft_strjoin("ttshivhu", ft_itoa(connfd)), connfd);
+		add_clients(&(*server).clients, ft_strjoin("ttshivhu",
+					ft_itoa(fd)), fd);
 		broadcast_action(server, server->clients, 1, NULL);
-		if (connfd > (*server).max_fd)
-			(*server).max_fd = connfd;
-		FD_SET(connfd, &((*server).reads));
+		if (fd > (*server).max_fd)
+			(*server).max_fd = fd;
+		FD_SET(fd, &((*server).reads));
 	}
 }

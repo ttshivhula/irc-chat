@@ -6,13 +6,13 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:40:49 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 08:55:16 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 10:49:03 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
 
-int	get_client_fd(t_clients *clients, char *name, int fd)
+int			get_client_fd(t_clients *clients, char *name, int fd)
 {
 	while (clients)
 	{
@@ -28,15 +28,15 @@ int	get_client_fd(t_clients *clients, char *name, int fd)
 	return (-1);
 }
 
-void	client_data(int clientfd, t_server *server)
+void		client_data(int clientfd, t_server *server)
 {
-	int		ret;
-	char	msg[BUFF_SIZE];
-	t_clients *client;
+	int			ret;
+	char		msg[BUFF_SIZE];
+	t_clients	*client;
 
 	ft_bzero(msg, sizeof(msg));
 	if ((ret = recv(clientfd, msg, sizeof(msg), 0)) > 0)
-		read_to_user(server, clientfd, msg);	
+		read_to_user(server, clientfd, msg);
 	else
 	{
 		if (ret < 0)
@@ -48,15 +48,14 @@ void	client_data(int clientfd, t_server *server)
 	}
 }
 
-static void	server_loop(t_server server)
+void		server_loop(t_server server, int j)
 {
 	int			i;
-	int			j;
 	fd_set		read_fds;
 
-	server.clients  = NULL;
 	read_fds = server.reads;
-	while (select(server.max_fd + 1, &read_fds, &(server.writes), NULL, NULL) > -1)
+	while (select(server.max_fd + 1, &read_fds,
+				&(server.writes), NULL, NULL) > -1)
 	{
 		i = -1;
 		while (++i < server.max_fd + 1)
@@ -82,6 +81,7 @@ int			main(int c, char **v)
 {
 	struct sockaddr_in	addr;
 	t_server			server;
+	int					j;
 
 	if (c != 2)
 		ft_die("Usage: ./server port\n", 1);
@@ -98,7 +98,9 @@ int			main(int c, char **v)
 	FD_ZERO(&server.writes);
 	FD_SET(server.fd, &(server.reads));
 	server.max_fd = server.fd;
+	server.clients = NULL;
+	j = 0;
 	while (42)
-		server_loop(server);
+		server_loop(server, j);
 	return (0);
 }

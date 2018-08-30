@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 10:06:47 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 10:16:39 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 11:23:44 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,8 @@
 # include <netdb.h>
 # include <dirent.h>
 # include <libft.h>
-
 # define BUFF_SIZE 4096
 # define NAME_SIZE 201
-
 # define ERROR "\x1b[31mERROR:\x1b[0m"
 # define SUCCESS "\x1b[32mSUCCESS:\x1b[0m"
 # define NORMAL	"\x1B[0m"
@@ -49,7 +47,6 @@
 # define PURPLE "\033[38;5;55m"
 # define MAROON "\033[38;5;88m"
 # define GREY "\033[38;5;246m"
-
 # define BOLD "\033[1m"
 # define WHATISIT "\033[2m"
 # define ITALIC "\033[3m"
@@ -59,7 +56,7 @@
 # define NO_ITALIC "\033[23m"
 # define NO_UNDERLINE "\033[24m"
 # define NO_CROSSED "\033[29m"
-# define CLEAR "\e[1;1H\e[2J" 
+# define CLEAR "\e[1;1H\e[2J"
 
 typedef struct			s_ring
 {
@@ -89,9 +86,12 @@ typedef struct			s_server
 }						t_server;
 
 void					ft_die(char *str, int exit_code);
-void					read_to_user(t_server *server, int clientfd, char *buff);
-int						same_channel(t_clients *clients, int client_one, int client_two);
-int						broadcast_action(t_server *server, t_clients *client, int action, char *nick);
+void					read_to_user(t_server *server, int clientfd,
+		char *buff);
+int						same_channel(t_clients *clients, int client_one,
+		int client_two);
+int						broadcast_action(t_server *server, t_clients *client,
+		int action, char *nick);
 t_clients				*get_client(t_clients *clients, int fd);
 t_clients				*get_client_nick(t_clients *clients, char *nick);
 int						run_who(t_server *server, t_clients *client);
@@ -103,14 +103,15 @@ int						send_command(char *msg, int fd);
 int						group_all_private(t_server *server, t_clients *client,
 		int private, int to_fd);
 char					*get_nick(char *s);
-void					dd_clients(t_clients **clients, char *name, int client_fd);
+void					dd_clients(t_clients **clients, char *name,
+		int client_fd);
 void					remove_client(t_clients **head, int fd);
 void					accept_client(t_server *server);
 void					in_server_connection(struct sockaddr_in addr,
 		struct hostent *host, char *buff, int *sockfd);
 void					set_fds_conn(fd_set *master, int fd);
-t_ring*					ring_init(void);
+t_ring					*ring_init(void);
 void					ft_write(t_ring **ring, char *buff);
 void					ft_read(t_ring **ring, char *str);
 
-# endif
+#endif

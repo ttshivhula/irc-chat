@@ -6,13 +6,13 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/30 09:29:40 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 10:13:24 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 10:30:12 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
 
-t_ring*			ring_init(void)
+t_ring		*ring_init(void)
 {
 	t_ring *tmp;
 
@@ -40,17 +40,18 @@ void		ft_write(t_ring **ring, char *buff)
 	}
 }
 
-static int	ft_get(t_ring **ring, char	*data)
+static int	ft_get(t_ring **ring, char *data)
 {
-    int r = 0;
+	int r;
 
-    if((*ring)->read_ptr != (*ring)->write_ptr)
-    {
-        *data = (*ring)->buff[(*ring)->read_ptr];
+	r = 0;
+	if ((*ring)->read_ptr != (*ring)->write_ptr)
+	{
+		*data = (*ring)->buff[(*ring)->read_ptr];
 		(*ring)->read_ptr = ((*ring)->read_ptr + 1) % BUFF_SIZE;
-        r = 1;
-    }
-    return (r);
+		r = 1;
+	}
+	return (r);
 }
 
 void		ft_read(t_ring **ring, char *str)

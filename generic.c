@@ -1,12 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   generic.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2018/08/30 10:34:23 by ttshivhu          #+#    #+#             */
+/*   Updated: 2018/08/30 10:35:06 by ttshivhu         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <irc.h>
 
-void	ft_die(char *str, int exit_code)
+void		ft_die(char *str, int exit_code)
 {
 	write(2, str, ft_strlen(str));
 	exit(exit_code);
 }
 
-char	*get_client_channel(t_clients *clients, int fd)
+char		*get_client_channel(t_clients *clients, int fd)
 {
 	while (clients)
 	{
@@ -17,7 +29,7 @@ char	*get_client_channel(t_clients *clients, int fd)
 	return (NULL);
 }
 
-int	same_channel(t_clients *clients, int client_one, int client_two)
+int			same_channel(t_clients *clients, int client_one, int client_two)
 {
 	char	*s1;
 	char	*s2;

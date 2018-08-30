@@ -6,13 +6,13 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 10:24:44 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 11:07:56 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <irc.h>
 
-int		send_message_to_server(int *sockfd, fd_set *master)
+int				send_message_to_server(int *sockfd, fd_set *master)
 {
 	char				tmp[BUFF_SIZE];
 	struct sockaddr_in	addr;
@@ -30,8 +30,6 @@ int		send_message_to_server(int *sockfd, fd_set *master)
 		exit(0);
 	if (!ft_strncmp(tmp, "/connect", 8))
 	{
-		close(*sockfd);
-		*sockfd = socket(AF_INET, SOCK_STREAM, 0);
 		in_server_connection(addr, host, tmp, sockfd);
 		set_fds_conn(master, *sockfd);
 	}
@@ -43,9 +41,9 @@ int		send_message_to_server(int *sockfd, fd_set *master)
 	return (EXIT_SUCCESS);
 }
 
-int		recv_message_from_server(int sockfd)
+int				recv_message_from_server(int sockfd)
 {
-	int			ret;
+	int				ret;
 	char			msg[BUFF_SIZE];
 
 	ft_bzero(msg, sizeof(msg));
@@ -58,12 +56,11 @@ int		recv_message_from_server(int sockfd)
 	return (EXIT_SUCCESS);
 }
 
-
-static int 	client_loop(int *sockfd, fd_set *master)
+static int		client_loop(int *sockfd, fd_set *master)
 {
 	fd_set		select_fds;
 	int			i;
-	
+
 	select_fds = *master;
 	while (select(FD_SETSIZE, &select_fds, NULL, NULL, NULL) > -1)
 	{
@@ -85,13 +82,14 @@ static int 	client_loop(int *sockfd, fd_set *master)
 	return (0);
 }
 
-void	connect_cmd(struct sockaddr_in addr, struct hostent	*host, int fd)
+void			connect_cmd(struct sockaddr_in addr, struct hostent	*host,
+		int fd)
 {
 	char				msg[BUFF_SIZE];
 	int					ret;
 	char				**parts;
 
-	ret = -1;	
+	ret = -1;
 	while (ret == -1)
 	{
 		printf("Unable to connect, please connect to server\n");
@@ -110,12 +108,12 @@ void	connect_cmd(struct sockaddr_in addr, struct hostent	*host, int fd)
 	}
 }
 
-int			main(int c, char **v)
+int				main(int c, char **v)
 {
 	struct sockaddr_in	addr;
 	struct hostent		*host;
 	int					fd;
-	fd_set master;
+	fd_set				master;
 
 	addr.sin_family = AF_INET;
 	host = NULL;
