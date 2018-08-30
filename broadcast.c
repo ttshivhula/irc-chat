@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 14:49:27 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 08:32:15 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 09:16:00 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,11 @@ int		broadcast_action(t_server *server, t_clients *client, int action, char *nic
 	ft_strcat(server->buff, client->nick);
 	ft_strcat(server->buff, " ");
     (!action && !nick) ? ft_strcat(server->buff, " left chat\n") : 0;
-    (action == 1) ? ft_strcat(server->buff, " joined group\n") : 0;
-    (action == 2) ? ft_strcat(server->buff, " left group\n") : 0;
+    (action == 1) ? ft_strcat(server->buff, " joined channel.\n") : 0;
+    (action == 2) ? ft_strcat(server->buff, " left channel.\n") : 0;
     (nick) ? ft_strcat(server->buff, " changed nick to ") : 0;
     (nick) ? ft_strcat(server->buff, nick) : 0;
-    (nick) ? ft_strcat(server->buff, "\n") : 0;
+    (nick) ? ft_strcat(server->buff, ".\n") : 0;
     ft_strcat(server->buff, NORMAL);
     ft_strcat(server->buff, NO_ITALIC);
 	while (++i < server->max_fd + 1)

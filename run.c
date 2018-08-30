@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 15:47:56 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 09:06:45 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 09:15:58 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ int		run_join(t_server *server, t_clients *client)
 		if (!ft_isalnum(channel[i]))
 			return send_command("bad channel.\n", client->client_fd);
 	}
-	broadcast_action(server, client, 2, NULL);
 	ft_strcpy(client->channel, channel);
 	broadcast_action(server, client, 1, NULL);
 	return send_command("you joined channel.\n", client->client_fd);

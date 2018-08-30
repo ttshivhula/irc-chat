@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/29 16:02:18 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/30 08:55:14 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 09:18:03 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void accept_client(t_server *server)
 		ft_putendl("Failed to accept client");
 	else
 	{
-		add_clients(&(*server).clients, ft_strjoin("client", ft_itoa(connfd)), connfd);
+		add_clients(&(*server).clients, ft_strjoin("ttshivhu", ft_itoa(connfd)), connfd);
 		broadcast_action(server, server->clients, 1, NULL);
 		if (connfd > (*server).max_fd)
 			(*server).max_fd = connfd;
