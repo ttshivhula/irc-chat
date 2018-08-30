@@ -6,7 +6,7 @@
 /*   By: ttshivhu <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/15 09:00:29 by ttshivhu          #+#    #+#             */
-/*   Updated: 2018/08/29 18:23:16 by ttshivhu         ###   ########.fr       */
+/*   Updated: 2018/08/30 10:24:44 by ttshivhu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,26 +14,30 @@
 
 int		send_message_to_server(int *sockfd, fd_set *master)
 {
-	char			msg[BUFF_SIZE];
-	struct sockaddr_in addr;
-	struct hostent *host;
+	char				tmp[BUFF_SIZE];
+	struct sockaddr_in	addr;
+	struct hostent		*host;
+	t_ring				*ring;
 
+	ring = ring_init();
 	host = (struct hostent *)0;
 	addr.sin_family = AF_INET;
-	ft_bzero(msg, sizeof(msg));
-	read(1, msg, 4096);
-	if (!ft_strcmp(msg, "/exit\n"))
+	ft_bzero(tmp, sizeof(tmp));
+	read(1, tmp, 4096);
+	ft_write(&ring, tmp);
+	ft_read(&ring, tmp);
+	if (!ft_strcmp(tmp, "/exit\n"))
 		exit(0);
-	if (!ft_strncmp(msg, "/connect", 8))
+	if (!ft_strncmp(tmp, "/connect", 8))
 	{
 		close(*sockfd);
 		*sockfd = socket(AF_INET, SOCK_STREAM, 0);
-		in_server_connection(addr, host, msg, sockfd);
+		in_server_connection(addr, host, tmp, sockfd);
 		set_fds_conn(master, *sockfd);
 	}
 	else
 	{
-		if (send(*sockfd, msg, sizeof(msg), 0) == -1)
+		if (send(*sockfd, tmp, sizeof(tmp), 0) == -1)
 			return (0);
 	}
 	return (EXIT_SUCCESS);
